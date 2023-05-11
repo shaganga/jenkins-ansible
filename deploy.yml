@@ -1,0 +1,14 @@
+---
+- hosts: all
+  gather_facts: No
+  tasks:
+  - name: Include vars from {{ DEPLOY_TARGET }}.yml
+    include_vars:
+      file: "{{ DEPLOY_TARGET }}.yml"
+
+  - name: Print the variables
+    debug:
+      msg: 
+        - "DEPLOY_TARGET is {{ DEPLOY_TARGET }}"
+        - "Release Version is {{ RELEASE_VERSION }}"
+        - "Fix Version is {{ FIX_VERSION }}"
