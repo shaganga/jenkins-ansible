@@ -10,9 +10,14 @@ pipeline {
     stages {
         stage('Download code') {
             steps {
-                sh """
-                curl -o ${params.DEPLOY_TARGET}.yml https://raw.githubusercontent.com/shaganga/github_actions/main/.github/workflows/blank.yml
-                """
+                script {
+                    def deployTargetFileContent = """
+                    ---
+                    RELEASE_VERSION: ${params.RELEASE_VERSION}
+                    FIX_VERSION: ${params.FIX_VERSION}
+                    """
+                    writeFile file: "${params.DEPLOY_TARGET}.yml", text: deployTargetFileContent
+                }
             }
         }
         stage('Run ansible') {
@@ -20,7 +25,7 @@ pipeline {
                 ansiblePlaybook(
                     playbook: 'deploy.yml',
                     inventory: 'inventory.ini',
-                    extras: "-e @${params.DEPLOY_TARGET}.yml -e RELEASE_VERSION=${params.RELEASE_VERSION} -e FIX_VERSION=${params.FIX_VERSION}"
+                    extras: "-e DEPLOY_TARGET=${params.DEPLOY_TARGET} -e @${params.DEPLOY_TARGET}.yml"
                 )
             }
         }
