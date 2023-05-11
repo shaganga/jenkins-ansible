@@ -14,7 +14,7 @@
         - "Fix Version is {{ FIX_VERSION }}"
        
   - name: Print the contents of {{ DEPLOY_TARGET }}.yml
-      command: cat {{ DEPLOY_TARGET }}.yml
-      register: output
+    command: cat {{ DEPLOY_TARGET }}.yml
+    register: output
 
   - debug: var=output.stdout_lines
