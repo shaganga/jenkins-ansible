@@ -12,3 +12,9 @@
         - "DEPLOY_TARGET is {{ DEPLOY_TARGET }}"
         - "Release Version is {{ RELEASE_VERSION }}"
         - "Fix Version is {{ FIX_VERSION }}"
+       
+  - name: Print the contents of {{ DEPLOY_TARGET }}.yml
+      command: cat {{ DEPLOY_TARGET }}.yml
+      register: output
+
+  - debug: var=output.stdout_lines
