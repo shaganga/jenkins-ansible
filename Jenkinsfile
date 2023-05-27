@@ -25,6 +25,18 @@ pipeline {
                   //  sh "curl -O https://raw.githubusercontent.com/shaganga/github_actions/main/releases.yaml"
                    sh "mv releases.yaml ${params.DEPLOY_TARGET}-deploy.yml"
                    sh "cat ${params.DEPLOY_TARGET}-deploy.yml"
+             
+                    sh """
+                    echo '<deploy>' > "${params.DEPLOY_TARGET}"-deploy.yml
+                    cat uat-deploy.yml |
+                    sed 's/- package_group:/    <placement>\n        <package key="{{ package_group/g' |
+                    sed 's/- package_name:/        {{ package_name/g' |
+                    sed 's/newVersion:/ }}:{{ newVersion/g' |
+                    sed 's/oldVersion:/ }}" \/>\n    <\/placement>/g' >> uat-deploy.xml
+                    echo '    <agent name="{{ lps_agent }}" />' >> "${params.DEPLOY_TARGET}"-deploy.yml
+                    echo '</deploy>' >> "${params.DEPLOY_TARGET}"-deploy.yml
+                    """
+                
                    
                 }
             }
