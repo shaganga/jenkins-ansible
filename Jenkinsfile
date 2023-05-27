@@ -1,46 +1,24 @@
 pipeline {
     agent any
 
-    parameters {
-        string(name: 'DEPLOY_TARGET', defaultValue: 'uat', description: 'Deployment target')
-        string(name: 'RELEASE_VERSION', defaultValue: '1.0.0', description: 'Release version')
-        string(name: 'FIX_VERSION', defaultValue: '1.0.1', description: 'Fix version')
-    }
-
     stages {
-        stage('Download code') {
-            steps {
-                script {
-                    sh "curl -O https://raw.githubusercontent.com/shaganga/github_actions/main/releases.yaml"
-                }
-            }
-        }
-
         stage('Generate Deploy XML') {
             steps {
                 script {
-                    sh """
-                    echo '<deploy>' > ${params.DEPLOY_TARGET}-deploy.xml
-                    echo '    <placement>' >> ${params.DEPLOY_TARGET}-deploy.xml
-                    cat uat-deploy.yml | while IFS= read -r line
-                    do
-                        if [[ \$line == *"package_group:"* ]]
-                        then
-                            package_group=\$(echo \$line | awk -F '\"' '{print \$2}')
-                        elif [[ \$line == *"package_name:"* ]]
-                        then
-                            package_name=\$(echo \$line | awk -F '\"' '{print \$2}')
-                        elif [[ \$line == *"newVersion:"* ]]
-                        then
-                            newVersion=\$(echo \$line | awk -F '\"' '{print \$2}')
-                            echo "        <package key=\"\${package_group}:\${package_name}:\${newVersion}\" />" >> ${params.DEPLOY_TARGET}-deploy.xml
-                        fi
-                    done
-                    echo '        <agent name="{{ lps_agent }}" />' >> ${params.DEPLOY_TARGET}-deploy.xml
-                    echo '    </placement>' >> ${params.DEPLOY_TARGET}-deploy.xml
-                    echo '</deploy>' >> ${params.DEPLOY_TARGET}-deploy.xml
-                    cat ${params.DEPLOY_TARGET}-deploy.xml
-                    """
+                    def yaml = readYaml file: 'uat-deploy.yml'
+                    def xml = new StringWriter()
+                    xml.println('<deploy>')
+                    xml.println('    <placement>')
+                    yaml.each { block ->
+                        def packageGroup = block.package_group
+                        def packageName = block.package_name
+                        def newVersion = block.newVersion
+                        xml.println('        <package key="' + packageGroup + ':' + packageName + ':' + newVersion + '" />')
+                    }
+                    xml.println('        <agent name="{{ lps_agent }}" />')
+                    xml.println('    </placement>')
+                    xml.println('</deploy>')
+                    writeFile file: 'uat-deploy.xml', text: xml.toString()
                 }
             }
         }
@@ -48,28 +26,20 @@ pipeline {
         stage('Generate Undeploy XML') {
             steps {
                 script {
-                    sh """
-                    echo '<undeploy>' > ${params.DEPLOY_TARGET}-undeploy.xml
-                    echo '    <placement>' >> ${params.DEPLOY_TARGET}-undeploy.xml
-                    cat uat-deploy.yml | while IFS= read -r line
-                    do
-                        if [[ \$line == *"package_group:"* ]]
-                        then
-                            package_group=\$(echo \$line | awk -F '\"' '{print \$2}')
-                        elif [[ \$line == *"package_name:"* ]]
-                        then
-                            package_name=\$(echo \$line | awk -F '\"' '{print \$2}')
-                        elif [[ \$line == *"oldVersion:"* ]]
-                        then
-                            oldVersion=\$(echo \$line | awk -F '\"' '{print \$2}')
-                            echo "        <package key=\"\${package_group}:\${package_name}:\${oldVersion}\" />" >> ${params.DEPLOY_TARGET}-undeploy.xml
-                        fi
-                    done
-                    echo '        <agent name="{{ lps_agent }}" />' >> ${params.DEPLOY_TARGET}-undeploy.xml
-                    echo '    </placement>' >> ${params.DEPLOY_TARGET}-undeploy.xml
-                    echo '</undeploy>' >> ${params.DEPLOY_TARGET}-undeploy.xml
-                    cat ${params.DEPLOY_TARGET}-undeploy.xml
-                    """
+                    def yaml = readYaml file: 'uat-undeploy.yml'
+                    def xml = new StringWriter()
+                    xml.println('<undeploy>')
+                    xml.println('    <placement>')
+                    yaml.each { block ->
+                        def packageGroup = block.package_group
+                        def packageName = block.package_name
+                        def oldVersion = block.oldVersion
+                        xml.println('        <package key="' + packageGroup + ':' + packageName + ':' + oldVersion + '" />')
+                    }
+                    xml.println('        <agent name="{{ lps_agent }}" />')
+                    xml.println('    </placement>')
+                    xml.println('</undeploy>')
+                    writeFile file: 'uat-undeploy.xml', text: xml.toString()
                 }
             }
         }
