@@ -36,6 +36,7 @@ pipeline {
                     echo '    <agent name="{{ lps_agent }}" />' >> ${params.DEPLOY_TARGET}-deploy.xml
                     echo '</deploy>' >> ${params.DEPLOY_TARGET}-deploy.xml
                     """
+                   sh "cat ${params.DEPLOY_TARGET}-deploy.xml"
                    
                 }
             }
