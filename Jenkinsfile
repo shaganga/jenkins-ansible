@@ -36,7 +36,7 @@ pipeline {
            //         inventory: 'inventory.ini',
             //        extras: "-e DEPLOY_TARGET=${params.DEPLOY_TARGET} -e @${params.DEPLOY_TARGET}.yml -e RELEASE_VERSION=${params.RELEASE_VERSION} -e FIX_VERSION=${params.FIX_VERSION}"
                // )
-            }
-        }
+          //  }
+        //}
     }
 }
