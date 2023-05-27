@@ -33,7 +33,7 @@ pipeline {
                         then
                             newVersion=\$(echo \$line | awk -F '\"' '{print \$2}')
                             echo "    <placement>" >> ${params.DEPLOY_TARGET}-deploy.xml
-                            echo "        <package key=\"\$package_group:\$package_name:\$newVersion\" />" >> ${params.DEPLOY_TARGET}-deploy.xml
+                            echo "        <package key=\"\${package_group}:\${package_name}:\${newVersion}\" />" >> ${params.DEPLOY_TARGET}-deploy.xml
                             echo "    </placement>" >> ${params.DEPLOY_TARGET}-deploy.xml
                         fi
                     done
@@ -62,7 +62,7 @@ pipeline {
                         then
                             oldVersion=\$(echo \$line | awk -F '\"' '{print \$2}')
                             echo "    <placement>" >> ${params.DEPLOY_TARGET}-undeploy.xml
-                            echo "        <package key=\"\$package_group:\$package_name:\$oldVersion\" />" >> ${params.DEPLOY_TARGET}-undeploy.xml
+                            echo "        <package key=\"\${package_group}:\${package_name}:\${oldVersion}\" />" >> ${params.DEPLOY_TARGET}-undeploy.xml
                             echo "    </placement>" >> ${params.DEPLOY_TARGET}-undeploy.xml
                         fi
                     done
