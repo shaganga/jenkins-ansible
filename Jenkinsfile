@@ -7,17 +7,17 @@ pipeline {
                 script {
                     def yaml = readYaml file: 'uat-deploy.yml'
                     def xml = new StringWriter()
-                    xml.println('<deploy>')
-                    xml.println('    <placement>')
+                    xml.echo('<deploy>')
+                    xml.echo('    <placement>')
                     yaml.each { block ->
                         def packageGroup = block.package_group
                         def packageName = block.package_name
                         def newVersion = block.newVersion
-                        xml.println('        <package key="' + packageGroup + ':' + packageName + ':' + newVersion + '" />')
+                        xml.echo('        <package key="' + packageGroup + ':' + packageName + ':' + newVersion + '" />')
                     }
-                    xml.println('        <agent name="{{ lps_agent }}" />')
-                    xml.println('    </placement>')
-                    xml.println('</deploy>')
+                    xml.echo('        <agent name="{{ lps_agent }}" />')
+                    xml.echo('    </placement>')
+                    xml.echo('</deploy>')
                     writeFile file: 'uat-deploy.xml', text: xml.toString()
                 }
             }
@@ -28,20 +28,15 @@ pipeline {
                 script {
                     def yaml = readYaml file: 'uat-undeploy.yml'
                     def xml = new StringWriter()
-                    xml.println('<undeploy>')
-                    xml.println('    <placement>')
+                    xml.echo('<undeploy>')
+                    xml.echo('    <placement>')
                     yaml.each { block ->
                         def packageGroup = block.package_group
                         def packageName = block.package_name
                         def oldVersion = block.oldVersion
-                        xml.println('        <package key="' + packageGroup + ':' + packageName + ':' + oldVersion + '" />')
+                        xml.echo('        <package key="' + packageGroup + ':' + packageName + ':' + oldVersion + '" />')
                     }
-                    xml.println('        <agent name="{{ lps_agent }}" />')
-                    xml.println('    </placement>')
-                    xml.println('</undeploy>')
-                    writeFile file: 'uat-undeploy.xml', text: xml.toString()
-                }
-            }
-        }
-    }
-}
+                    xml.echo('        <agent name="{{ lps_agent }}" />')
+                    xml.echo('    </placement>')
+                    xml.echo('</undeploy>')
+                    writeFile file: 'uat-undep
