@@ -11,17 +11,30 @@ pipeline {
         stage('Download code') {
             steps {
                 script {
-                    sh "curl -O https://raw.githubusercontent.com/shaganga/github_actions/main/release.yaml"
-                    sh "mv release.yaml ${params.DEPLOY_TARGET}.yml"
+                   // sh "curl -O https://raw.githubusercontent.com/shaganga/github_actions/main/release.yaml"
+                   // sh "mv release.yaml ${params.DEPLOY_TARGET}.yml"
+                    sh "curl -O https://raw.githubusercontent.com/shaganga/github_actions/main/releases.yaml"
+                    
                 }
             }
         }
-        stage('Run ansible') {
+             stage('Convrt YML to XML - deploy') {
             steps {
-                ansiblePlaybook(
-                    playbook: 'deploy.yml', 
-                    inventory: 'inventory.ini',
-                    extras: "-e DEPLOY_TARGET=${params.DEPLOY_TARGET} -e @${params.DEPLOY_TARGET}.yml -e RELEASE_VERSION=${params.RELEASE_VERSION} -e FIX_VERSION=${params.FIX_VERSION}"
+                script {
+                
+                    sh "curl -O https://raw.githubusercontent.com/shaganga/github_actions/main/releases.yaml"
+                   sh "mv release.yaml ${params.DEPLOY_TARGET}-deploy.yml"
+                   sh "cat ${params.DEPLOY_TARGET}-deploy.yml"
+                }
+            }
+        }
+        
+        //stage('Run ansible') {
+        //    steps {
+         //       ansiblePlaybook(
+           //         playbook: 'deploy.yml', 
+           //         inventory: 'inventory.ini',
+            //        extras: "-e DEPLOY_TARGET=${params.DEPLOY_TARGET} -e @${params.DEPLOY_TARGET}.yml -e RELEASE_VERSION=${params.RELEASE_VERSION} -e FIX_VERSION=${params.FIX_VERSION}"
                 )
             }
         }
