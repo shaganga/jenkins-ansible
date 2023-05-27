@@ -40,6 +40,7 @@ pipeline {
                     done
                     echo '</deploy>' >> ${params.DEPLOY_TARGET}-deploy.xml
                     """
+                    sh "cat ${params.DEPLOY_TARGET}-deploy.xml"
                 }
             }
         }
@@ -68,6 +69,7 @@ pipeline {
                     done
                     echo '</undeploy>' >> ${params.DEPLOY_TARGET}-undeploy.xml
                     """
+                       sh "cat ${params.DEPLOY_TARGET}-undeploy.xml"
                 }
             }
         }
