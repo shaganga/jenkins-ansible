@@ -1,11 +1,21 @@
 pipeline {
     agent any
 
+    parameters {
+        string(name: 'DEPLOY_TARGET', defaultValue: 'uat', description: 'Deployment target')
+    }
+
     stages {
+        stage('Download YAML') {
+            steps {
+                sh 'curl -O https://raw.githubusercontent.com/shaganga/github_actions/main/releases.yaml'
+            }
+        }
+
         stage('Generate Deploy XML') {
             steps {
                 script {
-                    def yaml = readYaml file: 'uat-deploy.yml'
+                    def yaml = readYaml file: 'releases.yaml'
                     def xml = new StringWriter()
                     xml.echo('<deploy>')
                     xml.echo('    <placement>')
@@ -18,7 +28,7 @@ pipeline {
                     xml.echo('        <agent name="{{ lps_agent }}" />')
                     xml.echo('    </placement>')
                     xml.echo('</deploy>')
-                    writeFile file: 'uat-deploy.xml', text: xml.toString()
+                    writeFile file: "${params.DEPLOY_TARGET}-deploy.xml", text: xml.toString()
                 }
             }
         }
@@ -26,7 +36,7 @@ pipeline {
         stage('Generate Undeploy XML') {
             steps {
                 script {
-                    def yaml = readYaml file: 'uat-undeploy.yml'
+                    def yaml = readYaml file: 'releases.yaml'
                     def xml = new StringWriter()
                     xml.echo('<undeploy>')
                     xml.echo('    <placement>')
@@ -39,4 +49,9 @@ pipeline {
                     xml.echo('        <agent name="{{ lps_agent }}" />')
                     xml.echo('    </placement>')
                     xml.echo('</undeploy>')
-                    writeFile file: 'uat-undep
+                    writeFile file: "${params.DEPLOY_TARGET}-undeploy.xml", text: xml.toString()
+                }
+            }
+        }
+    }
+}
