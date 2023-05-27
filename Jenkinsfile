@@ -1,3 +1,5 @@
+import hudson.util.XmlStringBuilder
+
 pipeline {
     agent any
 
@@ -16,18 +18,18 @@ pipeline {
             steps {
                 script {
                     def yaml = readYaml file: 'releases.yaml'
-                    def xml = new StringWriter()
-                    xml.echo('<deploy>')
-                    xml.echo('    <placement>')
+                    def xml = new XmlStringBuilder()
+                    xml.append('<deploy>')
+                    xml.append('    <placement>')
                     yaml.each { block ->
                         def packageGroup = block.package_group
                         def packageName = block.package_name
                         def newVersion = block.newVersion
-                        xml.echo('        <package key="' + packageGroup + ':' + packageName + ':' + newVersion + '" />')
+                        xml.append('        <package key="' + packageGroup + ':' + packageName + ':' + newVersion + '" />')
                     }
-                    xml.echo('        <agent name="{{ lps_agent }}" />')
-                    xml.echo('    </placement>')
-                    xml.echo('</deploy>')
+                    xml.append('        <agent name="{{ lps_agent }}" />')
+                    xml.append('    </placement>')
+                    xml.append('</deploy>')
                     writeFile file: "${params.DEPLOY_TARGET}-deploy.xml", text: xml.toString()
                 }
             }
@@ -37,18 +39,18 @@ pipeline {
             steps {
                 script {
                     def yaml = readYaml file: 'releases.yaml'
-                    def xml = new StringWriter()
-                    xml.echo('<undeploy>')
-                    xml.echo('    <placement>')
+                    def xml = new XmlStringBuilder()
+                    xml.append('<undeploy>')
+                    xml.append('    <placement>')
                     yaml.each { block ->
                         def packageGroup = block.package_group
                         def packageName = block.package_name
                         def oldVersion = block.oldVersion
-                        xml.echo('        <package key="' + packageGroup + ':' + packageName + ':' + oldVersion + '" />')
+                        xml.append('        <package key="' + packageGroup + ':' + packageName + ':' + oldVersion + '" />')
                     }
-                    xml.echo('        <agent name="{{ lps_agent }}" />')
-                    xml.echo('    </placement>')
-                    xml.echo('</undeploy>')
+                    xml.append('        <agent name="{{ lps_agent }}" />')
+                    xml.append('    </placement>')
+                    xml.append('</undeploy>')
                     writeFile file: "${params.DEPLOY_TARGET}-undeploy.xml", text: xml.toString()
                 }
             }
