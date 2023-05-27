@@ -34,13 +34,13 @@ pipeline {
                             newVersion=\$(echo \$line | awk -F '\"' '{print \$2}')
                             echo "    <placement>" >> ${params.DEPLOY_TARGET}-deploy.xml
                             echo "        <package key=\"\$package_group:\$package_name:\$newVersion\" />" >> ${params.DEPLOY_TARGET}-deploy.xml
-                            echo "        <agent name=\"{{ lps_agent }}\" />" >> ${params.DEPLOY_TARGET}-deploy.xml
                             echo "    </placement>" >> ${params.DEPLOY_TARGET}-deploy.xml
                         fi
                     done
+                    echo "    <agent name=\"{{ lps_agent }}\" />" >> ${params.DEPLOY_TARGET}-deploy.xml
                     echo '</deploy>' >> ${params.DEPLOY_TARGET}-deploy.xml
+                    cat ${params.DEPLOY_TARGET}-deploy.xml
                     """
-                    sh "cat ${params.DEPLOY_TARGET}-deploy.xml"
                 }
             }
         }
@@ -63,15 +63,11 @@ pipeline {
                             oldVersion=\$(echo \$line | awk -F '\"' '{print \$2}')
                             echo "    <placement>" >> ${params.DEPLOY_TARGET}-undeploy.xml
                             echo "        <package key=\"\$package_group:\$package_name:\$oldVersion\" />" >> ${params.DEPLOY_TARGET}-undeploy.xml
-                            echo "        <agent name=\"{{ lps_agent }}\" />" >> ${params.DEPLOY_TARGET}-undeploy.xml
                             echo "    </placement>" >> ${params.DEPLOY_TARGET}-undeploy.xml
                         fi
                     done
+                    echo "    <agent name=\"{{ lps_agent }}\" />" >> ${params.DEPLOY_TARGET}-undeploy.xml
                     echo '</undeploy>' >> ${params.DEPLOY_TARGET}-undeploy.xml
+                    cat ${params.DEPLOY_TARGET}-undeploy.xml
                     """
-                       sh "cat ${params.DEPLOY_TARGET}-undeploy.xml"
                 }
-            }
-        }
-    }
-}
