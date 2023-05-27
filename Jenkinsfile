@@ -16,18 +16,8 @@ pipeline {
             steps {
                 script {
                     def yaml = readYaml file: 'releases.yaml'
-                    def xml = new groovy.xml.StreamingMarkupBuilder().bind {
-                        deploy {
-                            placement {
-                                yaml.each { block ->
-                                    addPackage(key: "${block.package_group}:${block.package_name}:${block.newVersion}")
-                                }
-                                agent(name: '{{ lps_agent }}')
-                            }
-                        }
-                    }.toString()
-
-                    writeFile file: "${params.DEPLOY_TARGET}-deploy.xml", text: xml
+                    def deployXml = generateDeployXml(yaml)
+                    writeFile file: "${params.DEPLOY_TARGET}-deploy.xml", text: deployXml
                 }
             }
         }
@@ -36,20 +26,39 @@ pipeline {
             steps {
                 script {
                     def yaml = readYaml file: 'releases.yaml'
-                    def xml = new groovy.xml.StreamingMarkupBuilder().bind {
-                        undeploy {
-                            placement {
-                                yaml.each { block ->
-                                    addPackage(key: "${block.package_group}:${block.package_name}:${block.oldVersion}")
-                                }
-                                agent(name: '{{ lps_agent }}')
-                            }
-                        }
-                    }.toString()
-
-                    writeFile file: "${params.DEPLOY_TARGET}-undeploy.xml", text: xml
+                    def undeployXml = generateUndeployXml(yaml)
+                    writeFile file: "${params.DEPLOY_TARGET}-undeploy.xml", text: undeployXml
                 }
             }
         }
     }
+}
+
+def generateDeployXml(yaml) {
+    def xml = new StringBuilder()
+    xml.append('<deploy>\n')
+    xml.append('    <placement>\n')
+    
+    yaml.each { block ->
+        xml.append("        <package key=\"${block.package_group}:${block.package_name}:${block.newVersion}\" />\n")
+    }
+    
+    xml.append('        <agent name="{{ lps_agent }}" />\n')
+    xml.append('    </placement>\n')
+    xml.append('</deploy>\n')
+    
+    return xml.toString()
+}
+
+def generateUndeployXml(yaml) {
+    def xml = new StringBuilder()
+    xml.append('<undeploy>\n')
+    
+    yaml.each { block ->
+        xml.append("    <package key=\"${block.package_group}:${block.package_name}:${block.oldVersion}\" />\n")
+    }
+    
+    xml.append('</undeploy>\n')
+    
+    return xml.toString()
 }
