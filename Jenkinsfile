@@ -23,7 +23,7 @@ pipeline {
                 script {
                 
                     sh "curl -O https://raw.githubusercontent.com/shaganga/github_actions/main/releases.yaml"
-                   sh "mv release.yaml ${params.DEPLOY_TARGET}-deploy.yml"
+                   sh "mv releases.yaml ${params.DEPLOY_TARGET}-deploy.yml"
                    sh "cat ${params.DEPLOY_TARGET}-deploy.yml"
                 }
             }
