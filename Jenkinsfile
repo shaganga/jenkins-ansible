@@ -21,6 +21,7 @@ pipeline {
                 script {
                     sh """
                     echo '<deploy>' > ${params.DEPLOY_TARGET}-deploy.xml
+                    echo '    <placement>' >> ${params.DEPLOY_TARGET}-deploy.xml
                     cat uat-deploy.yml | while IFS= read -r line
                     do
                         if [[ \$line == *"package_group:"* ]]
@@ -32,13 +33,14 @@ pipeline {
                         elif [[ \$line == *"newVersion:"* ]]
                         then
                             newVersion=\$(echo \$line | awk -F '\"' '{print \$2}')
-                            echo "    <placement>" >> ${params.DEPLOY_TARGET}-deploy.xml
                             echo "        <package key=\"\${package_group}:\${package_name}:\${newVersion}\" />" >> ${params.DEPLOY_TARGET}-deploy.xml
-                            echo "    </placement>" >> ${params.DEPLOY_TARGET}-deploy.xml
                         fi
                     done
+                    echo '    </placement>' >> ${params.DEPLOY_TARGET}-deploy.xml
                     echo "    <agent name=\"{{ lps_agent }}\" />" >> ${params.DEPLOY_TARGET}-deploy.xml
                     echo '</deploy>' >> ${params.DEPLOY_TARGET}-deploy.xml
+                    sed -i 's/</\&lt;/g' ${params.DEPLOY_TARGET}-deploy.xml
+                    sed -i 's/>/\&gt;/g' ${params.DEPLOY_TARGET}-deploy.xml
                     cat ${params.DEPLOY_TARGET}-deploy.xml
                     """
                 }
@@ -50,6 +52,7 @@ pipeline {
                 script {
                     sh """
                     echo '<undeploy>' > ${params.DEPLOY_TARGET}-undeploy.xml
+                    echo '    <placement>' >> ${params.DEPLOY_TARGET}-undeploy.xml
                     cat uat-deploy.yml | while IFS= read -r line
                     do
                         if [[ \$line == *"package_group:"* ]]
@@ -61,13 +64,14 @@ pipeline {
                         elif [[ \$line == *"oldVersion:"* ]]
                         then
                             oldVersion=\$(echo \$line | awk -F '\"' '{print \$2}')
-                            echo "    <placement>" >> ${params.DEPLOY_TARGET}-undeploy.xml
                             echo "        <package key=\"\${package_group}:\${package_name}:\${oldVersion}\" />" >> ${params.DEPLOY_TARGET}-undeploy.xml
-                            echo "    </placement>" >> ${params.DEPLOY_TARGET}-undeploy.xml
                         fi
                     done
+                    echo '    </placement>' >> ${params.DEPLOY_TARGET}-undeploy.xml
                     echo "    <agent name=\"{{ lps_agent }}\" />" >> ${params.DEPLOY_TARGET}-undeploy.xml
                     echo '</undeploy>' >> ${params.DEPLOY_TARGET}-undeploy.xml
+                    sed -i 's/</\&lt;/g' ${params.DEPLOY_TARGET}-undeploy.xml
+                    sed -i 's/>/\&gt;/g' ${params.DEPLOY_TARGET}-undeploy.xml
                     cat ${params.DEPLOY_TARGET}-undeploy.xml
                     """
                 }
