@@ -20,7 +20,7 @@ pipeline {
                         deploy {
                             placement {
                                 yaml.each { block ->
-                                    package(key: "${block.package_group}:${block.package_name}:${block.newVersion}")
+                                    addPackage(key: "${block.package_group}:${block.package_name}:${block.newVersion}")
                                 }
                                 agent(name: '{{ lps_agent }}')
                             }
@@ -40,7 +40,7 @@ pipeline {
                         undeploy {
                             placement {
                                 yaml.each { block ->
-                                    package(key: "${block.package_group}:${block.package_name}:${block.oldVersion}")
+                                    addPackage(key: "${block.package_group}:${block.package_name}:${block.oldVersion}")
                                 }
                                 agent(name: '{{ lps_agent }}')
                             }
