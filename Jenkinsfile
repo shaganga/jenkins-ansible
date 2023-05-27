@@ -21,10 +21,11 @@ pipeline {
              stage('Convrt YML to XML - deploy') {
             steps {
                 script {
-                
-                    sh "curl -O https://raw.githubusercontent.com/shaganga/github_actions/main/releases.yaml"
+                  sh "rm -rf ${params.DEPLOY_TARGET}-deploy.yml"
+                  //  sh "curl -O https://raw.githubusercontent.com/shaganga/github_actions/main/releases.yaml"
                    sh "mv releases.yaml ${params.DEPLOY_TARGET}-deploy.yml"
                    sh "cat ${params.DEPLOY_TARGET}-deploy.yml"
+                   
                 }
             }
         }
