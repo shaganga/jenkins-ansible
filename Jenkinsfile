@@ -15,6 +15,7 @@ pipeline {
         stage('Download YAML') {
             steps {
                 sh 'curl -O https://raw.githubusercontent.com/shaganga/github_actions/main/releases.yaml'
+                  sh "cat ${params.DEPLOY_TARGET}-deploy.xml"
             }
         }
 
@@ -34,6 +35,7 @@ pipeline {
                     def yaml = readYaml file: 'releases.yaml'
                     def undeployXml = generateUndeployXml(yaml)
                     writeFile file: "${params.DEPLOY_TARGET}-undeploy.xml", text: undeployXml
+                      sh "cat ${params.DEPLOY_TARGET}-undeploy.xml"
                 }
             }
         }
