@@ -5,10 +5,10 @@ pipeline {
 
     parameters {
 
-        string(name: 'CHG_TICKET_NUMBER', defaultValue: '', description: 'Change Ticket Number', trim: true)
+        string(name: 'CHG_TICKET_NUMBER', defaultValue: 'SPG-13413', description: 'Change Ticket Number', trim: true)
         string(name: 'DEPLOY_TARGET', defaultValue: 'uat', description: 'Select Deploy Target Environment')
-        string(name: 'FIX_VERSION', defaultValue: '', description: 'Fix version provided by CTB team', trim: true)
-        string(name: 'RELEASE_VERSION', defaultValue: '', description: 'Release version provided by CTB team', trim: true)
+        string(name: 'FIX_VERSION', defaultValue: '1.0', description: 'Fix version provided by CTB team', trim: true)
+        string(name: 'RELEASE_VERSION', defaultValue: '2.0', description: 'Release version provided by CTB team', trim: true)
     }
 
     stages {
