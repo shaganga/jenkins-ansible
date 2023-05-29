@@ -61,12 +61,13 @@ def generateDeployXml(yaml) {
 def generateUndeployXml(yaml) {
     def xml = new StringBuilder()
     xml.append('<undeploy>\n')
-
+    xml.append('    <placement>\n')
     yaml.each { block ->
         xml.append("    <package key=\"${block.package_group}:${block.package_name}:${block.oldVersion}\" />\n")
     }
 
     xml.append("    <agent name=\"{{ lps_agent }}\" />\n")
+    xml.append('    </placement>\n')
     xml.append('</undeploy>\n')
 
     return xml.toString()
