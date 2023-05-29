@@ -1,5 +1,3 @@
-def deployMode = ['Mode1', 'Mode2', 'Mode3']
-
 pipeline {
     agent any
 
